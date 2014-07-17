@@ -1,7 +1,8 @@
 var docsApp = {
   controller: {},
   directive: {},
-  serviceFactory: {}
+  serviceFactory: {},
+  filter: {}
 };
 
 
@@ -74,6 +75,57 @@ docsApp.directive.focused = function($timeout) {
 
 docsApp.directive.code = function() {
   return { restrict:'E', terminal: true };
+};
+
+docsApp.filter.html = function($sce){
+    return function(input){
+      return input.replace(/&#39;/g, "'");
+    }
+};
+
+docsApp.directive.docModuleComponents = function() {
+  return {
+    template: '  <div class="component-breakdown">' +
+              '    <h2>Module Components</h2>' +
+              '    <div ng-repeat="(key, section) in components">' +
+              '      <h3 class="component-heading" id="{{ section.type }}">{{ section.title }}</h3>' +
+              '      <table class="definition-table">' +
+              '        <tr>' +
+              '          <th>Name</th>' +
+              '          <th>Description</th>' +
+              '        </tr>' +
+              '        <tr ng-repeat="component in section.components">' +
+              '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' +
+              '          <td>{{ component.shortDescription | html }}</td>' +
+              '        </tr>' +
+              '      </table>' +
+              '    </div>' +
+              '  </div>',
+    scope : {
+      module : '@docModuleComponents'
+    },
+    controller : ['$scope', '$anchorScroll', '$timeout', 'sections',
+      function($scope, $anchorScroll, $timeout, sections) {
+      var validTypes = ['property','function','directive','service','object','filter'];
+      var components = {};
+      angular.forEach(sections.api, function(item) {
+        if(item.moduleName == $scope.module) {
+          var type = item.type;
+          if(type == 'object') type = 'service';
+          if(validTypes.indexOf(type) >= 0) {
+            components[type] = components[type] || {
+              title : type,
+              type : type,
+              components : []
+            };
+            components[type].components.push(item);
+          }
+        }
+      });
+      $scope.components = components;
+      $timeout($anchorScroll, 0, false);
+    }]
+  };
 };
 
 
@@ -157,7 +209,7 @@ docsApp.serviceFactory.formPostData = function($document) {
   };
 };
 
-docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, loadedUrls) {
+docsApp.serviceFactory.mergeBody = function(templateMerge, loadedUrls) {
   return function(content) {
     var allFiles = [].concat(content.js, content.css, content.html);
     var indexHtmlContent = '<!doctype html>\n' +
@@ -187,6 +239,13 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, loaded
       indexContents: content.html[0].content
     };
 
+    return templateMerge(indexHtmlContent, indexProp);
+  }
+}
+
+docsApp.serviceFactory.openPlunkr = function(mergeBody, formPostData) {
+  return function(content) {
+    var allFiles = [].concat(content.js, content.css, content.html);
     var postData = {};
     angular.forEach(allFiles, function(file, index) {
       if (file.content && file.name != 'index.html') {
@@ -194,7 +253,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, loaded
       }
     });
 
-    postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
+    postData['files[index.html]'] = mergeBody(content);
     postData['tags[]'] = "angularjs";
 
     postData.private = true;
@@ -204,41 +263,18 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, loaded
   };
 };
 
-docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, loadedUrls) {
-
-  var HTML = '<div ng-app=\"{{module}}\">\n{{html:2}}</div>',
-      SCRIPT_CACHE = '\n\n<!-- {{name}} -->\n<script type="text/ng-template" id="{{name}}">\n{{content:2}}</script>';
-
+docsApp.serviceFactory.openJsFiddle = function(mergeBody, formPostData, loadedUrls) {
   return function(content) {
-    var prop = {
-          module: content.module,
-          html: '',
-          css: '',
-          script: ''
-        };
-
-    angular.forEach(content.html, function(file, index) {
-      if (index) {
-        prop.html += templateMerge(SCRIPT_CACHE, file);
-      } else {
-        prop.html += file.content;
-      }
-    });
+    var scripts = [];
 
     angular.forEach(content.js, function(file, index) {
-      prop.script += file.content;
-    });
-
-    angular.forEach(content.css, function(file, index) {
-      prop.css += file.content;
+      scripts += file.content;
     });
 
     formPostData("http://jsfiddle.net/api/post/library/pure/dependencies/more/", {
       title: 'AngularJS Example',
-      html: templateMerge(HTML, prop),
-      js: prop.script,
-      css: prop.css,
-      resources: loadedUrls.base.join(','),
+      html: mergeBody(content),
+      js: scripts,
       wrap: 'b'
     });
   };
@@ -577,4 +613,5 @@ angular.module('docsApp', ['ngAnimate', 'bootstrap', 'bootstrapPrettify']).
   }).
   factory(docsApp.serviceFactory).
   directive(docsApp.directive).
-  controller(docsApp.controller);
+  controller(docsApp.controller).
+  filter(docsApp.filter);

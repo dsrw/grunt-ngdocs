@@ -12,6 +12,28 @@
                  testability story all implemented with pure client-side JavaScript!">
   <meta name="fragment" content="!">
   <title ng-bind-template="<%= title || 'Doc' %>: {{partialTitle}}">Docs</title>
+  <style>
+    .breadcrumb > li + li:before {
+      content: none !important;
+    }
+    li.nav-header.section {
+      min-height: 30px !important;
+    }
+    .form-search .well .guide {
+      padding-top: inherit !important;
+    }
+    .form-search .well .nav-header a:hover {
+      position: static;
+    }
+    .navbar-inner {
+      margin-top: 0px !important;
+    }
+    .label {
+      font-size: 100% !important;
+      line-height: inherit !important;
+    }
+
+  </style>
   <script type="text/javascript">
     // dynamically add base tag as well as css and javascript files.
     // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources

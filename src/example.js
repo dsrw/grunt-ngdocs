@@ -48,7 +48,7 @@ exports.Example.prototype.addSource = function(name, content) {
     id = name + '-' + (seqCount++);
   }
   usedIds[id] = true;
-  
+
   this[ext].push({name: name, content: content, id: id});
   if (name.match(/\.js$/) && name !== 'spec.js' && name !== 'unit.js' && name != 'scenario.js') {
     this.deps.push(name);
@@ -134,7 +134,7 @@ exports.Example.prototype.toHtmlTabs = function() {
 
 exports.Example.prototype.toHtmlEmbed = function() {
   var out = [];
-  out.push('<div class="well doc-example-live animate-container"');
+  out.push('<div class="well row doc-example-live animate-container"');
   if(this.animations) {
     out.push(" ng-class=\"{'animations-off':animationsOff == true}\"");
   }
