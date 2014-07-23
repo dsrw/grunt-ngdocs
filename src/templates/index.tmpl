@@ -91,9 +91,8 @@
 
     <div class="reveal">
             <div class="slides">
-                <section><h1>Angular.js</h1></section>
 
-
+                    <section ng-include src="currentPage.partialUrl"></section>
                     <section ng-repeat="page in pages track by page.url" ng-include src="page.partialUrl">
                     </section>
 
