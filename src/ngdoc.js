@@ -514,7 +514,7 @@ Doc.prototype = {
         });
         if (self.example) {
             dom.tag("section", function() {
-                //dom.h('Example', self.example, dom.html);
+                dom.tag('div', self.example, dom.html);
             });
         }
 
