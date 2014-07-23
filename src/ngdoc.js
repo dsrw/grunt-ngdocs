@@ -513,7 +513,9 @@ Doc.prototype = {
             }).call(self, dom);
         });
         if (self.example) {
-            dom.tag("section", self.example, dom.html);
+            dom.tag("section", function() {
+                dom.tag('div', self.example, dom.html);
+            });
         }
 
         self.anchors = dom.anchors;
