@@ -114,7 +114,7 @@ DOM.prototype = {
   },
 
   code: function(text) {
-    this.tag('pre', {'class':"prettyprint linenums"}, text);
+    this.tag('pre', {'class':"prettyprint"}, text);
   },
 
   div: function(attr, text) {

@@ -131,15 +131,7 @@ docsApp.directive.docModuleComponents = function() {
 
 docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   return {
-    template: '<div class="btn-group pull-right">' +
-        '<a class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href>' +
-        '  <i class="icon-pencil icon-white"></i> Edit <span class="caret"></span>' +
-        '</a>' +
-        '<ul class="dropdown-menu">' +
-        '  <li><a ng-click="plunkr($event)" href="">In Plunkr</a></li>' +
-        '  <li><a ng-click="fiddle($event)" href="">In JsFiddle</a></li>' +
-        '</ul>' +
-        '</div>',
+    template: '<a ng-click="fiddle($event)" href="">Edit</a>',
     scope: true,
     controller: function($scope, $attrs, openJsFiddle, openPlunkr) {
       var sources = {

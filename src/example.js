@@ -67,16 +67,16 @@ exports.Example.prototype.disableAnimations = function() {
 };
 
 exports.Example.prototype.toHtml = function() {
-  var html = "<h2>Source</h2>\n";
-  html += this.toHtmlEdit();
-  html += this.toHtmlTabs();
+  //var html = "<h2>Source</h2>\n";
+  var html = this.toHtmlEdit();
+      html += this.toHtmlTabs();
   if(this.animations) {
     html += '<div class="pull-right">';
     html += ' <button class="btn btn-primary" ng-click="animationsOff=true" ng-hide="animationsOff">Animations on</button>';
     html += ' <button class="btn btn-primary disabled" ng-click="animationsOff=false" ng-show="animationsOff">Animations off</button>';
     html += '</div>';
   }
-  html += "<h2>Demo</h2>\n";
+
   html += this.toHtmlEmbed();
   return html;
 };
@@ -100,14 +100,12 @@ exports.Example.prototype.toHtmlTabs = function() {
   var out = [],
       self = this;
 
-  out.push('<div class="tabbable">');
   htmlTabs(this.html);
   htmlTabs(this.css);
   htmlTabs(this.js);
   htmlTabs(this.json);
   htmlTabs(this.unit);
   htmlTabs(this.scenario);
-  out.push('</div>');
   return out.join('');
 
   function htmlTabs(sources) {
@@ -122,12 +120,12 @@ exports.Example.prototype.toHtmlTabs = function() {
       if (name == 'scenario.js') name = 'End to end test';
 
       out.push(
-        '<div class="tab-pane" title="' + name + '">\n' +
-          '<pre class="prettyprint linenums" ng-set-text="' + source.id + '"' + wrap + '></pre>\n' +
+
+          '<pre style="margin-top: 0.8em;margin-bottom: 1.4em" class="prettyprint" ng-set-text="' + source.id + '"></pre>\n' +
           (isCss
              ? ('<style type="text/css" id="' + source.id + '">' + source.content + '</style>\n')
-             : ('<script type="text/ng-template" id="' + source.id + '">' + source.content + '</script>\n') ) +
-        '</div>\n');
+             : ('<script type="text/ng-template" id="' + source.id + '">' + source.content + '</script>\n') )
+        );
     });
   }
 };
