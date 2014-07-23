@@ -514,7 +514,10 @@ Doc.prototype = {
         });
         if (self.example) {
             dom.tag("section", function() {
-                dom.tag('div', self.example, dom.html);
+                //dom.tag('Example', self.example, dom.html);
+                this.tag('div', "", function() {
+                    dom.html.call(this, self.example);
+                });
             });
         }
 
